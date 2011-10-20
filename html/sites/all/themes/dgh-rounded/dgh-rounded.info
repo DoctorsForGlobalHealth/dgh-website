@@ -1,0 +1,19 @@
+name = DGH Rounded
+description = Theme prepared by Rahul Bhargava — http://www.rahulbotics.com - rahulbot@gmail.com
+core = 6.x
+engine = phptemplate
+
+regions[topofpage] = Top of Page
+regions[header_featurette] = Header Featurette
+regions[sidebar] = Sidebar
+regions[pre_content] = Pre Content
+regions[content] = Content
+regions[post_content] = Post Content
+regions[footer] = Footer
+
+stylesheets[all][] = stylesheets/layout.css     
+stylesheets[print][] = stylesheets/print.css
+
+# conditional-scripts[if lt IE 8][] = http://ie7-js.googlecode.com/svn/version/2.0(beta3)/IE8.js
+
+scripts[] = javascript/jquery.cycle.lite.min.js
