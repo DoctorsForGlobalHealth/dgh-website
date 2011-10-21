@@ -1,0 +1,11 @@
+; $Id$
+name = Translate This
+description = "This button translates any page quickly using Ajax and the Google Language API"
+core = 6.x
+package = Multilanguage
+; Information added by drupal.org packaging script on 2010-11-01
+version = "6.x-1.1"
+core = "6.x"
+project = "translate_this"
+datestamp = "1288631749"
+
