@@ -1,4 +1,3 @@
-// $Id: fckeditor.config.js,v 1.5.2.5.2.15 2010/02/25 08:30:35 jorrit Exp $
 
 /*
  WARNING: clear browser's cache after you modify this file.
