@@ -1,3 +1,9 @@
+-- 2012-03-14 version 6.x-2.x-dev
+* Tag as version 6.x-2.3
+
+-- 2012-01-09 version 6.x-2.x-dev
+* #1398900 Trying to get property of non-object when editing user with no FCKeditor access
+
 -- 2011-10-24 version 6.x-2.x-dev
 * Tag as version 6.x-2.2
 

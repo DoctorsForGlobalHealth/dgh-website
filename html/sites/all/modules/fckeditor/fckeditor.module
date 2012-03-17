@@ -112,16 +112,24 @@ function fckeditor_elements() {
  * AJAX callback - XSS filter
  */
 function fckeditor_filter_xss() {
+  global $user;
   $GLOBALS['devel_shutdown'] = FALSE;
 
-  if (!isset($_POST['text']) || !is_string($_POST['text']) || !is_array($_POST['filters'])) {
+  if (!isset($_POST['text']) || !is_string($_POST['text']) || !isset($_POST['token']) || !drupal_valid_token($_POST['token'], 'fckeditorAjaxCall', TRUE)) {
     exit;
   }
 
+  $profile = fckeditor_user_get_profile($user);
+
+  if ($profile == FALSE) {
+    exit;
+  }
+
+  $settings = $profile->settings;
   $text = $_POST['text'];
   $text = strtr($text, array('<!--' => '__COMMENT__START__', '-->' => '__COMMENT__END__'));
 
-  foreach ($_POST['filters'] as $module_delta) {
+  foreach ($settings['filters'] as $module_delta => $active) {
     $module = strtok($module_delta, "/");
     $delta = strtok("/");
     $format = strtok("/");
@@ -614,6 +622,7 @@ function fckeditor_process_textarea($element) {
       drupal_add_js($module_drupal_path .'/fckeditor.utils.js');
       /* In D6 drupal_add_js() can't add external JS, in D7 use drupal_add_js(...,'external') */
       drupal_set_html_head('<script type="text/javascript" src="'. $editor_path .'/fckeditor.js?I"></script>');
+      drupal_add_js(array('fckeditor' => array('ajaxToken' => drupal_get_token('fckeditorAjaxCall'))), 'setting');
       $is_running = TRUE;
     }
 

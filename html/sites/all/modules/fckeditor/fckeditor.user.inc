@@ -30,10 +30,15 @@
  */
 
 function fckeditor_user_delegate($type, $edit, &$user, $category = NULL) {
-  if ($type == 'form' && $category == 'account' && user_access('access fckeditor')) {
+  if ($type == 'form' && $category == 'account' && user_access('access fckeditor', $user)) {
     module_load_include('lib.inc', 'fckeditor');
 
     $profile = fckeditor_user_get_profile($user);
+    if (!$profile) {
+      // No profile has been assigned.
+      return;
+    }
+    
     $toolbar_options = fckeditor_load_toolbar_options();
     $skin_options = fckeditor_load_skin_options();
     $lang_options = fckeditor_load_lang_options();
