@@ -547,7 +547,7 @@ function _webform_condtional_get_usable_child_elements(&$components, $fieldset_c
       continue;
     }
     if ($child['pid'] == $fieldset_component['cid']) {
-      if ($child['type'] != 'fieldset' && isset($form_components[$current_cid]) && (empty($current_cid) || ($form_components[$current_cid]['pid'] != $child['pid'] || $form_components[$current_cid]['weight'] > $child['weight']))) {
+      if ($child['type'] != 'fieldset' && isset($form_components[$child['cid']]) && (empty($current_cid) || !isset($form_components[$current_cid]) || ($form_components[$current_cid]['pid'] != $child['pid'] || $form_components[$current_cid]['weight'] > $child['weight']))) {
         //the child element is not a fieldset AND (it either is not within the same fieldset as excluded component OR it appears lower in the fieldset(weight) then the excluded component)
         if ($return_groups && !empty($label)) {
           $components[$label][$child['cid']] = $child['name'];

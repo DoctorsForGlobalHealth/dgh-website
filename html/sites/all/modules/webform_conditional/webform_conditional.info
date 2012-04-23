@@ -9,9 +9,9 @@ core = "6.x"
 project = "webform_conditional"
 datestamp = "1289565002"
 
-; Information added by drupal.org packaging script on 2012-01-13
-version = "6.x-1.0"
+; Information added by drupal.org packaging script on 2012-04-15
+version = "6.x-1.1"
 core = "6.x"
 project = "webform_conditional"
-datestamp = "1326436870"
+datestamp = "1334509905"
 

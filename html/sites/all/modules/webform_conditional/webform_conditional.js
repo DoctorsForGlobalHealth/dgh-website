@@ -5,6 +5,10 @@
 	
 //Drupal.behaviors.webform_conditional = Drupal.behaviors.webform_conditional || {};
 Drupal.behaviors.webform_conditional = function() {
+  // create quasi static var to save perfomance
+  Drupal.webform_conditional.wrappers = new Object();
+  Drupal.webform_conditional.components = new Object();
+
 	$.each(Drupal.settings.webform_conditional.fields, function(triggerField_key, triggerField_info) {
 		
 		var formItemWrapper = Drupal.webform_conditional.getWrapper(triggerField_info);
@@ -29,8 +33,6 @@ Drupal.behaviors.webform_conditional = function() {
 	return;
 };
 Drupal.webform_conditional = Drupal.webform_conditional || {};
-// create quasi static var to save perfomance
-Drupal.webform_conditional.wrappers = new Object();
 Drupal.webform_conditional.getWrapper = function(fieldInfo){
 	if(Drupal.webform_conditional.wrappers[fieldInfo['css_id']]){
 		return Drupal.webform_conditional.wrappers[fieldInfo['css_id']];
@@ -82,7 +84,7 @@ Drupal.webform_conditional.setVisibility = function(triggerField_key,triggerFiel
 		Drupal.webform_conditional.TriggerDependents(dependentField,dependentInfo);
 	});
 };
-Drupal.webform_conditional.components = new Object();
+
 Drupal.webform_conditional.getComponentsByName = function (field_name){
 	// check to save jquery calls
 	if(Drupal.webform_conditional.components[field_name]){
