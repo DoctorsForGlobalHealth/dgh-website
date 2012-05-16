@@ -126,7 +126,7 @@ function print_preprocess_print_node(&$variables) {
     $hooks = theme_get_registry();
   }
 
-  //Stolen from theme() so that ALL preprocess functions are called
+  // Stolen from theme() so that ALL preprocess functions are called
   $info = $hooks['node'];
   if (isset($info['preprocess functions']) && is_array($info['preprocess functions'])) {
     // This construct ensures that we can keep a reference through
@@ -140,7 +140,7 @@ function print_preprocess_print_node(&$variables) {
   }
   $variables += $args[0];
 
-  //Include the right template suggestions based on format (print, email) and type.
+  // Include the right template suggestions based on format (print, email) and type.
   $format = $variables['type'];
   $type = $variables['node']->type;
 
@@ -164,7 +164,7 @@ function print_preprocess_print_page(&$variables) {
   $variables['show_blocks'] = FALSE;
   $variables['show_messages'] = FALSE;
 
-  //Stolen from theme() so that ALL preprocess functions are called
+  // Stolen from theme() so that ALL preprocess functions are called
   $info = $hooks['page'];
   if (isset($info['preprocess functions']) && is_array($info['preprocess functions'])) {
     // This construct ensures that we can keep a reference through
@@ -226,6 +226,7 @@ function print_menu() {
   );
   $items['admin/settings/print/html/strings'] = array(
     'title' => 'Text strings',
+    'description' => 'Override the user-facing strings used in the printer-friendly version.',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('print_html_strings_settings'),
     'access arguments'  => array('administer print'),
@@ -235,6 +236,7 @@ function print_menu() {
   );
   $items['admin/settings/print/common'] = array(
     'title' => 'Settings',
+    'description' => 'Settings for the common functionalities for all the print sub-modules.',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('print_main_settings'),
     'access arguments'  => array('administer print'),
@@ -249,6 +251,7 @@ function print_menu() {
   );
   $items['admin/settings/print/common/strings'] = array(
     'title' => 'Text strings',
+    'description' => 'Override the user-facing strings used by the print module.',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('print_main_strings_settings'),
     'access arguments'  => array('administer print'),
@@ -304,7 +307,7 @@ function print_block($op = 'list', $delta = 0, $edit = array()) {
           break;
         case 1:
           $block['subject'] = t('Most printed');
-          $result = db_query_range("SELECT path FROM {print_page_counter} LEFT JOIN {node} ON path = CONCAT('node/', node.nid) WHERE status != 0 OR status IS NULL ORDER BY totalcount DESC", 0, 3);
+          $result = db_query_range("SELECT path FROM {print_page_counter} LEFT JOIN {node} ON path = CONCAT('node/', node.nid) WHERE status <> 0 OR status IS NULL ORDER BY totalcount DESC", 0, 3);
           if (db_affected_rows()) {
             $block['content'] = '<div class="item-list"><ul>';
             while ($obj = db_fetch_object($result)) {
@@ -338,8 +341,8 @@ function print_link($type, $node = NULL, $teaser = FALSE) {
     $query = print_query_string_encode($query_arr, array('q'));
     if (empty($query)) $query = NULL;
 
-    if ($print_html_link_use_alias) {
-      $path = drupal_get_path_alias('node/'. $node->nid);
+    if (($print_html_link_use_alias) && ($alias = drupal_lookup_path('alias', 'node/'. $node->nid))) {
+      $path = $alias;
     }
     else {
       $path = $node->nid;
@@ -572,7 +575,9 @@ function _print_get_title($path) {
 }
 
 /**
- * Update the print_node_conf table to reflect the given attributes
+ * Modify the print_node_conf_table
+ *
+ * Update the print_node_conf table to reflect the given attributes.
  * If updating to the default values, delete the record.
  *
  * @param $nid
@@ -726,8 +731,8 @@ function print_insert_link($path = NULL, $node = NULL) {
         $path = 'book/export/html/'. $nid;
       }
       else {
-        if (variable_get('print_html_link_use_alias', PRINT_HTML_LINK_USE_ALIAS_DEFAULT)) {
-          $path = drupal_get_path_alias($path);
+        if (variable_get('print_html_link_use_alias', PRINT_HTML_LINK_USE_ALIAS_DEFAULT) && ($alias = drupal_lookup_path('alias', $path))) {
+          $path = $alias;
         }
         else {
           $path = $nid;
@@ -752,7 +757,7 @@ function print_insert_link($path = NULL, $node = NULL) {
 }
 
 /**
- * Determine if the provided page is enabled according to the visibility settings
+ * Check if the provided page is enabled according to the visibility settings
  *
  * @param $visibility
  *   current visibility settings:
@@ -782,7 +787,7 @@ function _print_page_match($visibility, $path, $pages) {
 }
 
 /**
- * Determine a the link to the PF version is allowed depending on all possible settings
+ * Check if the link to the PF version is allowed depending on the settings
  *
  * @param $args
  *   array containing the possible parameters:
@@ -867,6 +872,7 @@ function print_link_allowed($args) {
 
 /**
  * Parse an array into a valid urlencoded query string.
+ *
  * Modified from drupal_query_string_encode to prevent re-encoding of
  * encoded original.
  *

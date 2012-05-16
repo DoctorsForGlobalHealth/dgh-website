@@ -69,6 +69,7 @@ function print_mail_menu() {
   );
   $items['admin/settings/print/email'] = array(
     'title' => 'email',
+    'description' => 'Configure the settings of the send by email functionality.',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('print_mail_settings'),
     'access arguments'  => array('administer print'),
@@ -83,6 +84,7 @@ function print_mail_menu() {
   );
   $items['admin/settings/print/email/strings'] = array(
     'title' => 'Text strings',
+    'description' => 'Override the user-facing strings used in the send by email version.',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('print_mail_strings_settings'),
     'access arguments'  => array('administer print'),
@@ -112,7 +114,7 @@ function print_mail_block($op = 'list', $delta = 0, $edit = array()) {
       switch ($delta) {
       case 0:
         $block['subject'] = t('Most emailed');
-        $result = db_query_range("SELECT path FROM {print_mail_page_counter} LEFT JOIN {node} ON path = CONCAT('node/', node.nid) WHERE status != 0 OR status IS NULL ORDER BY sentcount DESC", 0, 3);
+        $result = db_query_range("SELECT path FROM {print_mail_page_counter} LEFT JOIN {node} ON path = CONCAT('node/', node.nid) WHERE status <> 0 OR status IS NULL ORDER BY sentcount DESC", 0, 3);
         if (db_affected_rows()) {
           $block['content'] = '<div class="item-list"><ul>';
           while ($obj = db_fetch_object($result)) {
@@ -157,8 +159,8 @@ function print_mail_link($type, $node = NULL, $teaser = FALSE) {
       $query = print_query_string_encode($query_arr, array('q'));
       if (empty($query)) $query = NULL;
 
-      if ($print_mail_link_use_alias) {
-        $path = drupal_get_path_alias('node/'. $node->nid);
+      if (($print_mail_link_use_alias) && ($alias = drupal_lookup_path('alias', 'node/'. $node->nid))) {
+        $path = $alias;
       }
       else {
         $path = $node->nid;
@@ -324,6 +326,7 @@ function _print_mail_access($permission) {
 
 /**
  * Update the print_mail_node_conf table to reflect the given attributes
+ *
  * If updating to the default values, delete the record.
  *
  * @param $nid
@@ -404,8 +407,8 @@ function print_mail_insert_link($path = NULL, $node = NULL) {
         $path = 'book/export/html/'. $nid;
       }
       else {
-        if (variable_get('print_mail_link_use_alias', PRINT_MAIL_LINK_USE_ALIAS_DEFAULT)) {
-          $path = drupal_get_path_alias($path);
+        if (variable_get('print_mail_link_use_alias', PRINT_MAIL_LINK_USE_ALIAS_DEFAULT) && ($alias = drupal_lookup_path('alias', $path))) {
+          $path = $alias;
         }
         else {
           $path = $nid;
@@ -430,7 +433,7 @@ function print_mail_insert_link($path = NULL, $node = NULL) {
 }
 
 /**
- * Determine a the link to send by email is allowed depending on all possible settings
+ * Check if the link to send by email is allowed depending on the settings
  *
  * @param $args
  *   array containing the possible parameters:
@@ -578,6 +581,7 @@ function print_mail_views_data_alter(&$data) {
 
 /**
  * Implements hook_rules_action_info().
+ *
  * @ingroup rules
  */
 function print_mail_rules_action_info() {
@@ -638,6 +642,7 @@ function print_mail_action_submit_form($settings, &$form) {
 
 /**
  * Action handler for the print_mail_action_submit
+ *
  * @ingroup rules
  */
 function print_mail_action_submit($node, $settings) {

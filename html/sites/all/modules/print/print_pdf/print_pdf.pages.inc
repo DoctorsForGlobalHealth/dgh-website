@@ -66,8 +66,6 @@ function print_pdf_controller() {
     // We must create a new row to store counters for the new node.
     db_query("INSERT INTO {print_pdf_page_counter} (path, totalcount, timestamp) VALUES ('%s', 1, %d)", $nodepath, time());
   }
-
-  drupal_exit();
 }
 
 function print_pdf_generate_path($path, $cid = NULL, $pdf_filename = NULL) {
@@ -231,7 +229,7 @@ function _print_pdf_dompdf($print, $html, $filename = NULL) {
   $html = htmlspecialchars_decode(htmlentities($html, ENT_NOQUOTES, 'ISO-8859-1'), ENT_NOQUOTES);
   }
 
-  //must get rid of tbody (dompdf goes into recursion)
+  // Must get rid of tbody (dompdf goes into recursion)
   $html = preg_replace('!<tbody[^>]*?>|</tbody>!i', '', $html);
 
   $dompdf->load_html($html);
@@ -336,7 +334,7 @@ function _print_pdf_tcpdf($print, $html, $filename = NULL) {
   ob_clean();
 
   if ($filename) {
-    //Close and output PDF document
+    // Close and output PDF document
     $output_dest = ($print_pdf_content_disposition == 2) ? 'D' : 'I';
     $pdf->Output($filename, $output_dest);
     return TRUE;
@@ -409,7 +407,7 @@ function _print_pdf_wkhtmltopdf($print, $html, $filename = NULL) {
   if (!empty($pdf)) {
     if ($filename) {
       if (headers_sent()) {
-        die("Unable to stream pdf: headers already sent");
+        exit("Unable to stream pdf: headers already sent");
       }
       header("Cache-Control: private");
       header("Content-Type: application/pdf");
@@ -492,10 +490,12 @@ function theme_print_pdf_tcpdf_header($pdf, $html, $font) {
 
   $ratio = 0;
   $logo = '';
-  if (preg_match('!src\s*=\s*(?:\'(.*?)\'|"(.*?)"|([^\s]*))!i', $tpl_logo[1], $logo_url)) {
+  if (isset($tpl_logo[1]) && preg_match('!src\s*=\s*(?:"(.*?)"|\'(.*?)\'|([^\s]*))!i', $tpl_logo[1], $logo_url)) {
     $logo = $logo_url[1];
-    $size = getimagesize($logo);
-    $ratio = $size ? ($size[0] / $size[1]) : 0;
+    if (!empty($logo)) {
+      $size = getimagesize($logo);
+      $ratio = $size ? ($size[0] / $size[1]) : 0;
+    }
   }
 
   // set header font
@@ -599,12 +599,12 @@ function theme_print_pdf_tcpdf_footer($pdf, $html, $font) {
  * @see theme_print_pdf_tcpdf_footer2()
  */
 function theme_print_pdf_tcpdf_footer2($pdf) {
-  //Position at 1.5 cm from bottom
+  // Position at 1.5 cm from bottom
   $pdf->writeHTMLCell(0, 15, 15, $pdf->getPageHeight()-15, $pdf->footer);
 
   $ormargins = $pdf->getOriginalMargins();
   $pagenumtxt = t('Page !n of !total', array('!n' => $pdf->PageNo(), '!total' => $pdf->getAliasNbPages()));
-  //Print page number
+  // Print page number
   if ($pdf->getRTL()) {
     $pdf->SetX($ormargins['right']);
     $pdf->Cell(0, 10, $pagenumtxt, 'T', 0, 'L');

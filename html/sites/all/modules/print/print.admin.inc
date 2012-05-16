@@ -27,12 +27,12 @@ function print_main_settings() {
 
   $form['settings'] = array(
     '#type' => 'fieldset',
-    '#title' => t('Common Settings'),
+    '#title' => t('Common settings'),
   );
 
   $form['settings']['print_css'] = array(
     '#type' => 'textfield',
-    '#title' => t('Custom Stylesheet'),
+    '#title' => t('Custom stylesheet'),
     '#default_value' => $print_css,
     '#size' => 60,
     '#maxlength' => 250,
@@ -364,7 +364,7 @@ function print_html_settings() {
 }
 
 /**
- * Menu callback for the Printer-friendly pages module text strings settings form.
+ * Menu callback for the common print module text strings settings form
  *
  * @ingroup forms
  */
@@ -397,7 +397,7 @@ function print_main_strings_settings() {
 }
 
 /**
- * Menu callback for the Printer-friendly pages module text strings settings form.
+ * Menu callback for the printer-friendly version text strings settings form
  *
  * @ingroup forms
  */

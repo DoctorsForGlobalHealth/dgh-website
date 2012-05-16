@@ -307,3 +307,20 @@ function print_mail_update_6007() {
   }
   return $ret;
 }
+
+/**
+ * Update permissions to new spellings
+ */
+function print_mail_update_6100() {
+  $ret = array();
+  $result = db_query("SELECT rid, perm FROM {permission} ORDER BY rid");
+  while ($role = db_fetch_object($result)) {
+    $renamed_permission = str_replace('access send to friend', 'access send by email', $role->perm);
+    $renamed_permission = str_replace('send unlimited e-mails', 'send unlimited emails', $renamed_permission);
+    $renamed_permission = db_escape_string($renamed_permission);
+    if ($renamed_permission != $role->perm) {
+      $ret[] = update_sql("UPDATE {permission} SET perm = '$renamed_permission' WHERE rid = $role->rid");
+    }
+  }
+  return $ret;
+}
