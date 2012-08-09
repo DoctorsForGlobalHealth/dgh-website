@@ -36,7 +36,7 @@
       <br />
       
       <?php print $sidebar; ?>
-
+      
     </div>
 
   <div id="content-col">
@@ -84,6 +84,8 @@
     This site and its contents are &#169; 1998 - <?php echo date("Y")?> by Doctors for Global Health.
     <?php print $footer; ?>
     <?php print $footer_message; ?>
+    <br />
+    <a href="/login"><?php echo t('login')?></a>
   </div>
 
   <?php print $closure; ?>
